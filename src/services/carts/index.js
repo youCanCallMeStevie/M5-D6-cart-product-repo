@@ -49,9 +49,13 @@ res.send(cart)
 router.route("/:cartId/remove-from-cart/:productId").delete(async (req, res, next) => {
   try {
     let carts = await readDB(cartsPath)
-    let products = await getProducts()
-    let updatedCart = carts.map(cart => cart._id === req.params.cartId ? products.filter(product => product._id != req.params.id) && await writeProducts(cartsPath, updatedCart) : cart)
+    let findCart = carts.find(cart => cart._id === req.params.cartId)
+    if (findCart){
+      let products = await getProducts()
+    let modifiedCart = products.filter(product => product._id != req.params.id)
+    await writeProducts(cartsPath, modifiedCart)
     res.send("Product has been deleted")
+    }
   } catch (error) {
     console.log(error);
     next(error);
